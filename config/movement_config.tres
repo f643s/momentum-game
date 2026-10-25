@@ -4,5 +4,4 @@
 
 [resource]
 script = ExtResource("1_go2gm")
-mouse_sensitivity = 0.002
 metadata/_custom_type_script = "uid://c6wwesvqflm3n"
