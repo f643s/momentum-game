@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://cxttoooipq5fw"]
 
+[ext_resource type="PackedScene" uid="uid://u8l7125xd1kv" path="res://scenes/player.tscn" id="1_nnsk1"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_coc8u"]
 size = Vector3(100, 1, 100)
 
@@ -34,5 +36,5 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=537243733]
 environment = SubResource("Environment_fkeca")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=140348907]
-transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.25881904, 0, -0.25881904, 0.9659258, 0, 2, 6)
+[node name="Player" parent="." unique_id=1279136701 instance=ExtResource("1_nnsk1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

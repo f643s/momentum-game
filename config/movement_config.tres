@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="MovementConfig" format=3 uid="uid://bs341rxag888y"]
+
+[ext_resource type="Script" uid="uid://c6wwesvqflm3n" path="res://scripts/movement_config.gd" id="1_go2gm"]
+
+[resource]
+script = ExtResource("1_go2gm")
+mouse_sensitivity = 0.002
+metadata/_custom_type_script = "uid://c6wwesvqflm3n"
