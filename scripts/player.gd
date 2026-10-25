@@ -3,17 +3,24 @@ extends CharacterBody3D
 ## The tuning file. Assign movement_config.tres in the Inspector.
 @export var config: MovementConfig
 
+## Current movement state, shown in the F1 overlay.
+var state_name: String = "GROUND"
+
 @onready var pivot: Node3D = $CameraPivot
 @onready var camera: Camera3D = $CameraPivot/Camera3D
 @onready var speed_label: Label = $HUD/SpeedLabel
 
 
 func _ready() -> void:
+	add_to_group("player")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	camera.fov = config.fov_base
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if DevConsole.is_open:
+		return
+
 	if event.is_action_pressed("ui_cancel"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	elif event is InputEventMouseButton and event.pressed:
@@ -28,13 +35,23 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if DevConsole.noclip:
+		_fly(delta)
+		_update_feel(delta)
+		return
+
+	# While the console is open, ignore game keys so typing doesn't move you.
+	var locked: bool = DevConsole.is_open
+
 	if not is_on_floor():
 		velocity.y -= config.gravity * delta
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if not locked and Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = config.jump_velocity
 
-	var input_dir: Vector2 = Input.get_vector("left", "right", "forward", "back")
+	var input_dir: Vector2 = Vector2.ZERO
+	if not locked:
+		input_dir = Input.get_vector("left", "right", "forward", "back")
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
 
 	if is_on_floor():
@@ -43,16 +60,29 @@ func _physics_process(delta: float) -> void:
 		_move_air(direction, delta)
 
 	move_and_slide()
+	state_name = "GROUND" if is_on_floor() else "AIR"
 	_update_feel(delta)
+
+
+func _fly(delta: float) -> void:
+	state_name = "NOCLIP"
+	var input_dir: Vector2 = Vector2.ZERO
+	var up: float = 0.0
+	if not DevConsole.is_open:
+		input_dir = Input.get_vector("left", "right", "forward", "back")
+		up = Input.get_action_strength("jump")
+	# Uses the camera's facing, so looking down and pressing W flies down.
+	var dir: Vector3 = pivot.global_transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)
+	dir += Vector3.UP * up
+	velocity = dir * config.walk_speed * DevConsole.noclip_speed_mult
+	global_position += velocity * delta
 
 
 func _move_ground(direction: Vector3, delta: float) -> void:
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
 	if direction != Vector3.ZERO:
-		# Accelerate toward the wanted velocity.
 		horizontal = horizontal.move_toward(direction * config.walk_speed, config.ground_accel * delta)
 	else:
-		# No input: friction slides you to a stop.
 		horizontal = horizontal.move_toward(Vector3.ZERO, config.ground_friction * delta)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
@@ -61,8 +91,6 @@ func _move_ground(direction: Vector3, delta: float) -> void:
 func _move_air(direction: Vector3, delta: float) -> void:
 	var horizontal := Vector3(velocity.x, 0.0, velocity.z)
 	if direction != Vector3.ZERO:
-		# Only add speed toward the input up to walk_speed, so steering never
-		# slows you down and fast momentum is kept.
 		var current: float = horizontal.dot(direction)
 		var add: float = clampf(config.walk_speed - current, 0.0, config.air_accel * delta)
 		horizontal += direction * add
