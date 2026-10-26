@@ -128,6 +128,10 @@ func _process(_delta: float) -> void:
 		text += "Speed: %.1f m/s\n" % flat.length()
 		text += "Velocity: (%.1f, %.1f, %.1f)\n" % [p.velocity.x, p.velocity.y, p.velocity.z]
 		text += "State: %s\n" % str(p.get("state_name"))
+		text += "Air jumps left: %s\n" % str(p.get("air_jumps_left"))
+		var dt: Array = p.get("dash_timers")
+		text += "Dash cooldowns F/L/R/B: %.1f %.1f %.1f %.1f\n" % [dt[0], dt[1], dt[2], dt[3]]
+		
 	text += "Timescale: %.2f" % Engine.time_scale
 	if god:
 		text += "\nGOD"

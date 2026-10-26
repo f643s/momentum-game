@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cxttoooipq5fw"]
 
 [ext_resource type="PackedScene" uid="uid://u8l7125xd1kv" path="res://scenes/player.tscn" id="1_nnsk1"]
+[ext_resource type="PackedScene" uid="uid://bs78qpghxuv21" path="res://scenes/enemy_dummy.tscn" id="2_rwgxs"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_coc8u"]
 size = Vector3(100, 1, 100)
@@ -38,3 +39,12 @@ environment = SubResource("Environment_fkeca")
 
 [node name="Player" parent="." unique_id=1279136701 instance=ExtResource("1_nnsk1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="dummy" parent="." unique_id=2075775450 instance=ExtResource("2_rwgxs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -4)
+
+[node name="dummy2" parent="." unique_id=1561565200 instance=ExtResource("2_rwgxs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.1, -5)
+
+[node name="dummy3" parent="." unique_id=1911286178 instance=ExtResource("2_rwgxs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.1, -5)
